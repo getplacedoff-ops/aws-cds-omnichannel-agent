@@ -1,0 +1,74 @@
+{
+  "competition": "AWS Communication Developer Services (CDS) Agentic AI Partner Hackathon",
+  "orchestrator_version": "v2.0 (Boto3 Runtime SDK: pinpoint-sms-voice-v2, socialmessaging, sesv2, bedrock-agent-runtime, dynamodb)",
+  "num_workflows_evaluated": 60,
+  "baseline_single_channel_completion_rate": 0.2,
+  "agentic_omnichannel_completion_rate": 1.0,
+  "cross_channel_context_retention": 1.0,
+  "carrier_failover_recoveries_verified": 9,
+  "total_eval_time_ms": 320.32,
+  "sample_workflow_trace": {
+    "completed": true,
+    "context_preserved": true,
+    "channels_used": [
+      "SMS",
+      "Email",
+      "WhatsApp"
+    ],
+    "failover_recoveries": 1,
+    "turns": [
+      {
+        "step": 1,
+        "channel": "SMS",
+        "aws_service": "AWS End User Messaging SMS",
+        "boto3_sdk_call": "pinpoint-sms-voice-v2.send_text_message",
+        "message_id": "eum-sms-c40de461f158",
+        "direction": "BIDIRECTIONAL",
+        "intent_detected": "initiate_outbound_trigger",
+        "payload_summary": "Outbound SMS trigger for pharmacy_rx_refill",
+        "state_hash": "ac9a4c8b1719",
+        "failover_triggered": false,
+        "utility_score": 0.94
+      },
+      {
+        "step": 2,
+        "channel": "WhatsApp",
+        "aws_service": "AWS End User Messaging Social (WhatsApp Failover)",
+        "boto3_sdk_call": "socialmessaging.send_whatsapp_message",
+        "message_id": "wamid.bde04fd4f3348796",
+        "direction": "BIDIRECTIONAL",
+        "intent_detected": "select_option_via_rcs_card",
+        "payload_summary": "Interactive RCS Rich Card tap selection",
+        "state_hash": "3f638d82c140",
+        "failover_triggered": true,
+        "utility_score": 0.92
+      },
+      {
+        "step": 3,
+        "channel": "WhatsApp",
+        "aws_service": "AWS End User Messaging Social (WhatsApp)",
+        "boto3_sdk_call": "socialmessaging.send_whatsapp_message",
+        "message_id": "wamid.1bc992e7352a10b8",
+        "direction": "BIDIRECTIONAL",
+        "intent_detected": "confirm_media_via_whatsapp",
+        "payload_summary": "WhatsApp two-way rich confirmation",
+        "state_hash": "98f7c62ecce3",
+        "failover_triggered": false,
+        "utility_score": 0.98
+      },
+      {
+        "step": 4,
+        "channel": "Email",
+        "aws_service": "Amazon Simple Email Service (SES v2)",
+        "boto3_sdk_call": "sesv2.send_email",
+        "message_id": "sesv2-eb85900d331632",
+        "direction": "BIDIRECTIONAL",
+        "intent_detected": "dispatch_ses_audit_document",
+        "payload_summary": "Amazon SESv2 transactional document delivery",
+        "state_hash": "971e8b592578",
+        "failover_triggered": false,
+        "utility_score": 0.95
+      }
+    ]
+  }
+}

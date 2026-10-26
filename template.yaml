@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  AWS Communication Developer Services (CDS) Agentic AI Partner Hackathon
+  Omnichannel Stateful Orchestrator (SMS, RCS, WhatsApp, Amazon SESv2, Bedrock AgentCore & DynamoDB)
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: python3.11
+    MemorySize: 512
+    Environment:
+      Variables:
+        AWS_CDS_DYNAMODB_TABLE: !Ref AWSCDSConversationContextGraphTable
+        AWS_SES_FROM_EMAIL: concierge@nuaibot.com
+
+Resources:
+  AWSCDSConversationContextGraphTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: AWSCDSConversationContextGraph
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: CustomerId
+          AttributeType: S
+        - AttributeName: StateHash
+          AttributeType: S
+      KeySchema:
+        - AttributeName: CustomerId
+          KeyType: HASH
+        - AttributeName: StateHash
+          KeyType: RANGE
+
+  AWSCDSOmnichannelOrchestratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: cds_omnichannel_agent.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AWSCDSConversationContextGraphTable
+        - Statement:
+            - Effect: Allow
+              Action:
+                - sms-voice:SendTextMessage
+                - sms-voice:DescribePhoneNumbers
+                - social-messaging:SendWhatsAppMessage
+                - ses:SendEmail
+                - bedrock:InvokeAgent
+                - bedrock:InvokeModel
+              Resource: '*'
+      Events:
+        OmnichannelWebhookApi:
+          Type: Api
+          Properties:
+            Path: /omnichannel/dispatch
+            Method: post
