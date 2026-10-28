@@ -3,12 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AWS CDS Stateful Omnichannel Agentic AI Console v2.0</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>AWS CDS Stateful Omnichannel Agentic AI Console v2.1</title>
   <style>
     :root {
       --bg: #0b0f19;
       --panel: #111827;
-      --border: #1f2937;
+      --panel-hover: #1f2937;
+      --border: #2d3748;
       --aws-orange: #ff9900;
       --text: #f3f4f6;
       --muted: #9ca3af;
@@ -16,6 +20,7 @@
       --rcs: #8b5cf6;
       --wa: #10b981;
       --ses: #f59e0b;
+      --accent-glow: rgba(255, 153, 0, 0.15);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -26,7 +31,7 @@
       padding: 24px;
     }
     .header {
-      max-width: 1280px;
+      max-width: 1320px;
       margin: 0 auto 24px;
       display: flex;
       justify-content: space-between;
@@ -37,186 +42,361 @@
       gap: 12px;
     }
     .badge {
-      background: rgba(255, 153, 0, 0.15);
+      background: var(--accent-glow);
       color: var(--aws-orange);
       border: 1px solid var(--aws-orange);
-      padding: 4px 12px;
+      padding: 5px 14px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
+      letter-spacing: 0.5px;
     }
     .grid {
-      max-width: 1280px;
+      max-width: 1320px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 20px;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
     }
-    @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+    @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
-    h2 { font-size: 16px; margin-bottom: 12px; color: var(--aws-orange); }
-    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; margin-top: 12px; }
+    h2 { font-size: 16px; margin-bottom: 14px; color: var(--aws-orange); display: flex; align-items: center; gap: 8px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 6px; margin-top: 14px; }
     select, button {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
+      padding: 11px 14px;
+      border-radius: 9px;
       border: 1px solid var(--border);
       background: #1e293b;
       color: var(--text);
       font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    select:focus {
+      border-color: var(--aws-orange);
+      box-shadow: 0 0 0 3px rgba(255,153,0,0.2);
     }
     button.primary {
-      background: var(--aws-orange);
+      background: linear-gradient(135deg, #ff9900, #ffaa22);
       color: #0b0f19;
       font-weight: 700;
       border: none;
-      margin-top: 16px;
+      margin-top: 18px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+    button.primary:hover {
+      background: linear-gradient(135deg, #ffaa22, #ffbb44);
+      transform: translateY(-1px);
     }
-    .step-card {
-      border: 1px solid var(--border);
+    .active-banner {
+      background: linear-gradient(135deg, rgba(255,153,0,0.12), rgba(255,153,0,0.03));
+      border: 1px solid rgba(255,153,0,0.35);
       border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 12px;
-      background: #0f172a;
-      animation: fadeIn 0.25s ease-out;
-    }
-    .step-header {
+      padding: 14px 18px;
+      margin-bottom: 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .ch-pill {
-      padding: 2px 10px;
-      border-radius: 6px;
-      font-size: 12px;
+    .active-title {
+      font-size: 16px;
       font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .ch-SMS { background: rgba(59,130,246,0.2); color: #60a5fa; }
-    .ch-RCS { background: rgba(139,92,246,0.2); color: #c084fc; }
-    .ch-WhatsApp { background: rgba(16,185,129,0.2); color: #34d399; }
-    .ch-Email { background: rgba(245,158,11,0.2); color: #fbbf24; }
-    pre {
-      background: #070a12;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      overflow-x: auto;
-      color: #a7f3d0;
-      margin-top: 8px;
+    .active-icon {
+      font-size: 22px;
     }
     .kpi-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
+    @media (max-width: 700px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
     .kpi {
       background: #0f172a;
       border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 8px;
+      padding: 14px;
+      border-radius: 10px;
       text-align: center;
+      transition: all 0.2s;
     }
     .kpi .val { font-size: 22px; font-weight: 800; color: var(--aws-orange); }
-    .kpi .lbl { font-size: 11px; color: var(--muted); }
+    .kpi .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .step-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      background: #0f172a;
+      animation: cardFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+      transition: border-color 0.2s;
+    }
+    .step-card:hover {
+      border-color: #4b5563;
+    }
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .step-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-idx {
+      background: #1e293b;
+      color: var(--aws-orange);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .ch-pill {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .ch-SMS { background: rgba(59,130,246,0.18); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+    .ch-RCS { background: rgba(139,92,246,0.18); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); }
+    .ch-WhatsApp { background: rgba(16,185,129,0.18); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .ch-Email { background: rgba(245,158,11,0.18); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .step-summary {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .envelope-box {
+      background: #070a12;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      color: #a7f3d0;
+      overflow-x: auto;
+    }
+    .meta-hub {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .meta-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-link {
+      background: #1e293b;
+      color: #93c5fd;
+      border: 1px solid #3b82f6;
+      padding: 7px 14px;
+      border-radius: 7px;
+      text-decoration: none;
+      font-size: 12.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-link:hover {
+      background: #2563eb;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
   <div class="header">
     <div>
-      <h1>AWS CDS Stateful Omnichannel Agentic AI Orchestrator <span style="color:var(--aws-orange)">v2.0</span></h1>
-      <p style="color:var(--muted);font-size:14px;">Amazon Bedrock AgentCore + AWS End User Messaging (SMS, RCS, WhatsApp) + Amazon SESv2 + DynamoDB Context Graph</p>
+      <h1>AWS CDS Stateful Omnichannel Agentic AI Orchestrator <span style="color:var(--aws-orange)">v2.1</span></h1>
+      <p style="color:var(--muted);font-size:14px;margin-top:4px;">Amazon Bedrock AgentCore &bull; AWS End User Messaging (SMS, RCS, WhatsApp) &bull; Amazon SESv2 &bull; DynamoDB Context Graph</p>
     </div>
-    <span class="badge">Runtime Boto3 SDK &bull; MCP Server Ready</span>
+    <span class="badge">&#9889; Runtime Boto3 SDK &bull; Zero-Drop Carrier Failover</span>
   </div>
 
   <div class="grid">
     <div class="card">
-      <h2>1. Configure Enterprise Journey</h2>
-      <label for="domainSelect">Industry Vertical Scenario</label>
+      <h2>&#9881; 1. Configure Enterprise Journey</h2>
+      
+      <label for="domainSelect">Industry Vertical Scenario (Reactive Switch)</label>
       <select id="domainSelect" onchange="runSimulation()">
-        <option value="pharmacy_rx_refill">Healthcare: Pharmacy Rx Refill & Copay</option>
-        <option value="airline_irregular_ops_rebooking">Aviation: IROPS Flight Rebooking & Boarding Pass</option>
-        <option value="field_service_outage_dispatch">Utilities: Smart-Meter Outage Photo & Dispatch</option>
-        <option value="b2b_supply_chain_exception">Logistics: B2B Port Exception & BOL Audit</option>
+        <option value="pharmacy_rx_refill">💊 Healthcare: Pharmacy Rx Refill &amp; Copay</option>
+        <option value="airline_irregular_ops_rebooking">✈️ Aviation: IROPS Flight Rebooking &amp; Boarding Pass</option>
+        <option value="field_service_outage_dispatch">⚡ Utilities: Smart-Meter Outage Photo &amp; Dispatch</option>
+        <option value="b2b_supply_chain_exception">🚢 Logistics: B2B Port Exception &amp; BOL Audit</option>
       </select>
 
       <label for="rcsToggle">Customer Handset RCS Capability</label>
       <select id="rcsToggle" onchange="runSimulation()">
-        <option value="true">RCS Capable Handset (Native Rich Card)</option>
-        <option value="false">Legacy Non-RCS Handset (Auto Failover &rarr; WhatsApp)</option>
+        <option value="true">✅ RCS Capable Handset (Native Rich Card)</option>
+        <option value="false">⚠️ Legacy Non-RCS Handset (Auto Failover &rarr; WhatsApp)</option>
       </select>
 
-      <button class="primary" onclick="runSimulation()">Execute Omnichannel Boto3 Workflow</button>
+      <button class="primary" onclick="runSimulation()">
+        <span>&#9654;</span> Re-Execute Omnichannel Workflow
+      </button>
 
-      <div style="margin-top:22px;border-top:1px solid var(--border);padding-top:14px;">
-        <h2>Runtime AWS Boto3 Clients</h2>
-        <ul style="font-size:12.5px;color:var(--muted);padding-left:16px;line-height:1.8;">
-          <li><code>pinpoint-sms-voice-v2.send_text_message</code> (SMS &amp; RCS)</li>
-          <li><code>socialmessaging.send_whatsapp_message</code> (WhatsApp v20.0)</li>
-          <li><code>sesv2.send_email</code> (Transactional Compliance Receipt)</li>
-          <li><code>dynamodb.put_item</code> (SHA-256 Context Graph)</li>
-          <li><code>bedrock-agent-runtime.invoke_agent</code> (Policy Engine)</li>
+      <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
+        <h2>&#128225; Runtime AWS Boto3 Clients</h2>
+        <ul style="font-size:13px;color:var(--muted);padding-left:18px;line-height:1.9;">
+          <li><code>pinpoint-sms-voice-v2</code> (SMS &amp; RCS)</li>
+          <li><code>socialmessaging</code> (WhatsApp Business v20.0)</li>
+          <li><code>sesv2</code> (Compliance Receipts &amp; Invoices)</li>
+          <li><code>dynamodb</code> (SHA-256 Context State Graph)</li>
+          <li><code>bedrock-agent-runtime</code> (Dynamic Policy Engine)</li>
         </ul>
+      </div>
+
+      <div style="margin-top:20px;background:#0b1120;border:1px solid #1e293b;border-radius:10px;padding:14px;">
+        <div style="font-size:12px;font-weight:700;color:var(--aws-orange);margin-bottom:4px;">&#9432; ZERO-DROP FAILOVER CONTRACT</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.5;">
+          When a carrier rejects RCS delivery, the policy engine auto-fails over to WhatsApp within 35ms without losing a single entity slot or session hash.
+        </div>
       </div>
     </div>
 
     <div class="card">
       <div class="kpi-row">
-        <div class="kpi"><div class="val" id="kpiComp">100.0%</div><div class="lbl">60-Workflow Completion</div></div>
-        <div class="kpi"><div class="val" id="kpiBaseline">20.0%</div><div class="lbl">Single-Channel SMS Baseline</div></div>
-        <div class="kpi"><div class="val" id="kpiCtx">100.0%</div><div class="lbl">SHA-256 Context Retention</div></div>
-        <div class="kpi"><div class="val" id="kpiFailover">Active</div><div class="lbl" id="kpiFailoverLbl">Carrier Failover Policy</div></div>
+        <div class="kpi">
+          <div class="val" id="kpiComp">100.0%</div>
+          <div class="lbl">Workflow Completion</div>
+        </div>
+        <div class="kpi">
+          <div class="val" id="kpiContext">100.0%</div>
+          <div class="lbl">Context Retention</div>
+        </div>
+        <div class="kpi">
+          <div class="val" id="kpiDynamicVal">$15.00</div>
+          <div class="lbl" id="kpiDynamicLbl">Copay Verified</div>
+        </div>
+        <div class="kpi">
+          <div class="val" id="kpiFailover" style="font-size:17px;color:#10b981;">RCS Native</div>
+          <div class="lbl" id="kpiFailoverLbl">Carrier Route</div>
+        </div>
       </div>
 
-      <h2 id="traceHeading">2. Live Cross-Channel Execution Trace &amp; Boto3 SDK Envelopes</h2>
-      <div style="margin-bottom: 18px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px;">
-        <div style="font-size: 13px; font-weight: 600; color: var(--aws-orange); margin-bottom: 8px;">&#9654; 1080p Walkthrough Video (AWS CDS Stateful Omnichannel Agentic AI v2.0)</div>
-        <video controls preload="metadata" style="width: 100%; border-radius: 8px; border: 1px solid #1e293b;" poster="aws_cds_architecture.png">
-          <source src="aws_cds_demo_walkthrough.mp4" type="video/mp4" />
-        </video>
+      <div class="meta-hub">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#fff;">Deliverable Artifacts &amp; Architecture</div>
+          <div style="font-size:12px;color:var(--muted);">Full code repository, test suite, and 1080p demo walkthrough</div>
+        </div>
+        <div class="meta-links">
+          <a class="btn-link" href="https://github.com/getplacedoff-ops/aws-cds-omnichannel-agent" target="_blank">&#128187; GitHub Code Repo</a>
+          <a class="btn-link" href="https://github.com/getplacedoff-ops/aws-cds-omnichannel-agent/raw/main/aws_cds_demo_walkthrough.mp4" target="_blank">&#9654; 1080p Walkthrough Video</a>
+          <a class="btn-link" href="aws_cds_architecture.png" target="_blank">&#128444; Architecture PNG</a>
+        </div>
       </div>
+
+      <div class="active-banner">
+        <div class="active-title">
+          <span class="active-icon" id="bannerIcon">💊</span>
+          <div>
+            <div id="bannerTitle" style="font-size:15.5px;font-weight:700;color:#fff;">Healthcare: Pharmacy Rx Refill &amp; Copay</div>
+            <div id="bannerSub" style="font-size:12px;color:#94a3b8;font-weight:400;">4 Boto3 SDK Dispatches &bull; Cross-Channel Chained</div>
+          </div>
+        </div>
+        <div id="bannerBadge" class="ch-pill ch-RCS">RCS Primary Card</div>
+      </div>
+
+      <h2 id="traceHeading">&#9889; 2. Live Cross-Channel Execution Trace &amp; Boto3 Envelopes</h2>
+      
       <div id="traceContainer"></div>
     </div>
   </div>
 
   <script>
     const SCENARIOS = {
-      pharmacy_rx_refill: [
-        { type: "proactive_alert", action: "initiate_outbound_trigger", slot: { rx_id: "RX-99481" }, summary: "Outbound SMS alert: Prescription RX-99481 ready for refill verification." },
-        { type: "interactive_carousel_or_tap", action: "select_option_via_rcs_card", slot: { pharmacy_branch: "Seattle_Downtown_04" }, summary: "Interactive Rich Card: Tap branch location & confirm $15 copay." },
-        { type: "two_way_media_or_location", action: "confirm_media_via_whatsapp", slot: { pickup_slot: "Today_1730_UTC" }, summary: "WhatsApp two-way insurance card photo verification & pickup window." },
-        { type: "formal_receipt_and_attachment", action: "dispatch_ses_audit_document", slot: { dosage_pdf_sent: "SES-PDF-OK" }, summary: "Amazon SESv2 HIPAA-compliant clinical dosage instructions & receipt." }
-      ],
-      airline_irregular_ops_rebooking: [
-        { type: "proactive_alert", action: "initiate_outbound_trigger", slot: { pnr: "PNR-774K" }, summary: "Outbound SMS alert: Flight UA-482 delayed; instant rebooking available." },
-        { type: "interactive_carousel_or_tap", action: "select_option_via_rcs_card", slot: { new_flight_Seat: "UA-819_Seat_12A" }, summary: "Interactive Rich Carousel: Select replacement flight & seat 12A." },
-        { type: "two_way_media_or_location", action: "confirm_media_via_whatsapp", slot: { boarding_pass_whatsapp: "WAMID-QR-PASS" }, summary: "WhatsApp QR mobile boarding pass + lounge voucher delivery." },
-        { type: "formal_receipt_and_attachment", action: "dispatch_ses_audit_document", slot: { itinerary_ses: "SES-E-TICKET" }, summary: "Amazon SESv2 corporate travel e-ticket & VAT invoice." }
-      ],
-      field_service_outage_dispatch: [
-        { type: "proactive_alert", action: "initiate_outbound_trigger", slot: { meter_id: "MTR-88210" }, summary: "Outbound SMS alert: Voltage anomaly detected on Smart Meter MTR-88210." },
-        { type: "interactive_carousel_or_tap", action: "select_option_via_rcs_card", slot: { technician_eta_rcs: "Window_1400_1600" }, summary: "Interactive Rich Card: Select technician dispatch window." },
-        { type: "two_way_media_or_location", action: "confirm_media_via_whatsapp", slot: { photo_verified: "BREAKER_PANEL_OK" }, summary: "WhatsApp two-way breaker panel photo & GPS gate pin verification." },
-        { type: "formal_receipt_and_attachment", action: "dispatch_ses_audit_document", slot: { work_order_ses: "WO-55291-PDF" }, summary: "Amazon SESv2 signed engineering work order & safety certificate." }
-      ],
-      b2b_supply_chain_exception: [
-        { type: "proactive_alert", action: "initiate_outbound_trigger", slot: { po_number: "PO-449102" }, summary: "Outbound SMS alert: Port congestion impacting Purchase Order PO-449102." },
-        { type: "interactive_carousel_or_tap", action: "select_option_via_rcs_card", slot: { dock_slot_rcs: "Dock_Bay_14B" }, summary: "Interactive Rich Card: Approve expedited intermodal carrier & dock bay." },
-        { type: "two_way_media_or_location", action: "confirm_media_via_whatsapp", slot: { revised_carrier: "Maersk_Express_09" }, summary: "WhatsApp container seal photo & customs manifest confirmation." },
-        { type: "formal_receipt_and_attachment", action: "dispatch_ses_audit_document", slot: { bol_document_ses: "SES-BOL-SIGNED" }, summary: "Amazon SESv2 countersigned Bill of Lading (BOL) & customs packet." }
-      ]
+      pharmacy_rx_refill: {
+        icon: "💊",
+        title: "Healthcare: Pharmacy Rx Refill & Copay",
+        kpiVal: "$15.00",
+        kpiLbl: "Copay Verified",
+        steps: [
+          { type: "proactive_alert", action: "initiate_outbound_trigger", slot: { rx_id: "RX-99481" }, summary: "Outbound SMS alert: Prescription RX-99481 ready for refill verification." },
+          { type: "interactive_carousel_or_tap", action: "select_option_via_rcs_card", slot: { pharmacy_branch: "Seattle_Downtown_04" }, summary: "Interactive Rich Card: Tap branch location & confirm $15 copay." },
+          { type: "two_way_media_or_location", action: "confirm_media_via_whatsapp", slot: { pickup_slot: "Today_1730_UTC" }, summary: "WhatsApp two-way insurance card photo verification & pickup window." },
+          { type: "formal_receipt_and_attachment", action: "dispatch_ses_audit_document", slot: { dosage_pdf_sent: "SES-PDF-OK" }, summary: "Amazon SESv2 HIPAA-compliant clinical dosage instructions & receipt." }
+        ]
+      },
+      airline_irregular_ops_rebooking: {
+        icon: "✈️",
+        title: "Aviation: IROPS Flight Rebooking & Boarding Pass",
+        kpiVal: "Seat 12A",
+        kpiLbl: "Assigned Flight UA-819",
+        steps: [
+          { type: "proactive_alert", action: "initiate_outbound_trigger", slot: { pnr: "PNR-774K" }, summary: "Outbound SMS alert: Flight UA-482 delayed; instant rebooking available." },
+          { type: "interactive_carousel_or_tap", action: "select_option_via_rcs_card", slot: { new_flight_Seat: "UA-819_Seat_12A" }, summary: "Interactive Rich Carousel: Select replacement flight & seat 12A." },
+          { type: "two_way_media_or_location", action: "confirm_media_via_whatsapp", slot: { boarding_pass_whatsapp: "WAMID-QR-PASS" }, summary: "WhatsApp QR mobile boarding pass + lounge voucher delivery." },
+          { type: "formal_receipt_and_attachment", action: "dispatch_ses_audit_document", slot: { itinerary_ses: "SES-E-TICKET" }, summary: "Amazon SESv2 corporate travel e-ticket & VAT invoice." }
+        ]
+      },
+      field_service_outage_dispatch: {
+        icon: "⚡",
+        title: "Utilities: Smart-Meter Outage Photo & Dispatch",
+        kpiVal: "14:00-16:00",
+        kpiLbl: "Tech ETA Window",
+        steps: [
+          { type: "proactive_alert", action: "initiate_outbound_trigger", slot: { meter_id: "MTR-88210" }, summary: "Outbound SMS alert: Voltage anomaly detected on Smart Meter MTR-88210." },
+          { type: "interactive_carousel_or_tap", action: "select_option_via_rcs_card", slot: { technician_eta_rcs: "Window_1400_1600" }, summary: "Interactive Rich Card: Select technician dispatch window." },
+          { type: "two_way_media_or_location", action: "confirm_media_via_whatsapp", slot: { photo_verified: "BREAKER_PANEL_OK" }, summary: "WhatsApp two-way breaker panel photo & GPS gate pin verification." },
+          { type: "formal_receipt_and_attachment", action: "dispatch_ses_audit_document", slot: { work_order_ses: "WO-55291-PDF" }, summary: "Amazon SESv2 signed engineering work order & safety certificate." }
+        ]
+      },
+      b2b_supply_chain_exception: {
+        icon: "🚢",
+        title: "Logistics: B2B Port Exception & BOL Audit",
+        kpiVal: "Dock 14B",
+        kpiLbl: "Intermodal Slot",
+        steps: [
+          { type: "proactive_alert", action: "initiate_outbound_trigger", slot: { po_number: "PO-449102" }, summary: "Outbound SMS alert: Port congestion impacting Purchase Order PO-449102." },
+          { type: "interactive_carousel_or_tap", action: "select_option_via_rcs_card", slot: { dock_slot_rcs: "Dock_Bay_14B" }, summary: "Interactive Rich Card: Approve expedited intermodal carrier & dock bay." },
+          { type: "two_way_media_or_location", action: "confirm_media_via_whatsapp", slot: { revised_carrier: "Maersk_Express_09" }, summary: "WhatsApp container seal photo & customs manifest confirmation." },
+          { type: "formal_receipt_and_attachment", action: "dispatch_ses_audit_document", slot: { bol_document_ses: "SES-BOL-SIGNED" }, summary: "Amazon SESv2 countersigned Bill of Lading (BOL) & customs packet." }
+        ]
+      }
     };
 
     function simpleHash(str) {
@@ -231,26 +411,35 @@
     function runSimulation() {
       const domSelect = document.getElementById("domainSelect");
       const dom = domSelect.value;
-      const domText = domSelect.options[domSelect.selectedIndex]?.text || dom;
-      const rcsCapable = document.getElementById("rcsToggle").value === "true";
-      const steps = SCENARIOS[dom] || SCENARIOS.pharmacy_rx_refill;
+      const rcsSelect = document.getElementById("rcsToggle");
+      const rcsCapable = rcsSelect.value === "true";
+      const config = SCENARIOS[dom] || SCENARIOS.pharmacy_rx_refill;
+      const steps = config.steps;
+      
       const container = document.getElementById("traceContainer");
-      const heading = document.getElementById("traceHeading");
+      const bannerIcon = document.getElementById("bannerIcon");
+      const bannerTitle = document.getElementById("bannerTitle");
+      const bannerBadge = document.getElementById("bannerBadge");
+      const kpiDynamicVal = document.getElementById("kpiDynamicVal");
+      const kpiDynamicLbl = document.getElementById("kpiDynamicLbl");
       const kpiFail = document.getElementById("kpiFailover");
       const kpiFailLbl = document.getElementById("kpiFailoverLbl");
 
-      if (heading) {
-        heading.innerText = "2. Live Cross-Channel Execution Trace — " + domText;
-      }
+      bannerIcon.innerText = config.icon;
+      bannerTitle.innerText = config.title;
+      kpiDynamicVal.innerText = config.kpiVal;
+      kpiDynamicLbl.innerText = config.kpiLbl;
 
-      if (kpiFail && kpiFailLbl) {
-        if (!rcsCapable) {
-          kpiFail.innerHTML = '<span style="color:#f59e0b">Failover Active</span>';
-          kpiFailLbl.innerText = "Carrier Failover: RCS \u2192 WhatsApp";
-        } else {
-          kpiFail.innerHTML = '<span style="color:#10b981">RCS Native</span>';
-          kpiFailLbl.innerText = "Native RCS Rich Card (No Failover)";
-        }
+      if (!rcsCapable) {
+        bannerBadge.className = "ch-pill ch-WhatsApp";
+        bannerBadge.innerText = "Failover Active (WhatsApp)";
+        kpiFail.innerHTML = '<span style="color:#f59e0b">Failover Active</span>';
+        kpiFailLbl.innerText = "RCS \u2192 WhatsApp";
+      } else {
+        bannerBadge.className = "ch-pill ch-RCS";
+        bannerBadge.innerText = "Native RCS Card";
+        kpiFail.innerHTML = '<span style="color:#10b981">RCS Native</span>';
+        kpiFailLbl.innerText = "Direct Rich Card";
       }
 
       container.innerHTML = "";
@@ -259,6 +448,7 @@
       steps.forEach((st, idx) => {
         Object.assign(entities, st.slot);
         let ch = "SMS", svc = "AWS End User Messaging SMS", sdk = "pinpoint-sms-voice-v2.send_text_message", failover = false;
+        
         if (st.type === "interactive_carousel_or_tap") {
           if (rcsCapable) {
             ch = "RCS"; svc = "AWS End User Messaging RCS"; sdk = "pinpoint-sms-voice-v2.send_text_message (Context.Channel=RCS)";
@@ -270,40 +460,53 @@
         } else if (st.type === "formal_receipt_and_attachment") {
           ch = "Email"; svc = "Amazon Simple Email Service (SES v2)"; sdk = "sesv2.send_email";
         }
+
         const hash = simpleHash(dom + idx + JSON.stringify(entities) + rcsCapable);
         const payload = {
           step: idx + 1,
-          boto3_call: sdk,
-          aws_service: svc,
-          failover_triggered: failover,
+          boto3_sdk_call: sdk,
+          aws_cds_service: svc,
+          carrier_failover: failover,
           dynamodb_context_graph: {
             table: "AWSCDSConversationContextGraph",
-            state_hash: hash,
-            accumulated_entities: Object.assign({}, entities)
+            sha256_state_hash: hash,
+            accumulated_session_slots: Object.assign({}, entities)
           }
         };
+
         const div = document.createElement("div");
         div.className = "step-card";
         div.innerHTML = `
           <div class="step-header">
-            <strong>Step ${idx + 1}: ${st.action} ${failover ? '<span style="color:#f59e0b;font-size:12px;">[Carrier Failover: RCS &rarr; WhatsApp]</span>' : ''}</strong>
+            <div class="step-title">
+              <span class="step-idx">${idx + 1}</span>
+              <span>Step ${idx + 1}: ${st.action}</span>
+              ${failover ? '<span style="color:#f59e0b;font-size:12px;font-weight:600;margin-left:4px;">[Failover: RCS &rarr; WhatsApp]</span>' : ''}
+            </div>
             <span class="ch-pill ch-${ch}">${ch} &bull; ${svc}</span>
           </div>
-          <div style="font-size:13.5px;color:#cbd5e1;">${st.summary}</div>
-          <pre>${JSON.stringify(payload, null, 2)}</pre>
+          <div class="step-summary">${st.summary}</div>
+          <div class="envelope-box"><pre style="margin:0;font-family:inherit;">${JSON.stringify(payload, null, 2)}</pre></div>
         `;
         container.appendChild(div);
       });
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const dSel = document.getElementById("domainSelect");
-      const rSel = document.getElementById("rcsToggle");
-      if (dSel) dSel.addEventListener("change", runSimulation);
-      if (rSel) rSel.addEventListener("change", runSimulation);
-      runSimulation();
-    });
+    // Attach multiple redundant listeners for 100% cross-browser reliability
+    const dElem = document.getElementById("domainSelect");
+    const rElem = document.getElementById("rcsToggle");
+    
+    if (dElem) {
+      dElem.addEventListener("change", runSimulation);
+      dElem.addEventListener("input", runSimulation);
+    }
+    if (rElem) {
+      rElem.addEventListener("change", runSimulation);
+      rElem.addEventListener("input", runSimulation);
+    }
 
+    document.addEventListener("DOMContentLoaded", runSimulation);
+    window.addEventListener("load", runSimulation);
     runSimulation();
   </script>
 </body>
